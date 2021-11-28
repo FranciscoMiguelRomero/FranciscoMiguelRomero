@@ -1,0 +1,110 @@
+M=500
+n=100
+xnorm<-seq(1,M)
+for (i in 1:M){
+  xnorm[i]<-max(rnorm(n,0,1))
+}
+xnorm
+logverxnorm<-function(x){
+  return(-sum(log(fdensidad(xnorm,x[1],x[2],x[3]))))
+}
+logverxnorm2<-function(a,b,c){
+  return(sum(log(fdensidad(xnorm,a,b,c))))
+}
+a0<-median(xnorm)
+b0<-sd(xnorm)
+
+logverperfilnina<-function(c){
+  lv<-function(x){
+    return(-sum(log(fdensidad(xnorm,x[1],x[2],c))))
+  } ###lv es la funcion de logverosimilitud evaluada en x=(a,b) y c,
+  ####queremos maximizar para a,b
+  a0<-median(xnorm) ##estimador inicial de a
+  b0<-sd(xnorm)##estimador inicial de b
+  emv<-optim(c(a0,b0),lv)$par
+  return(logverxnorm2(emv[1],emv[2],c))
+}
+c0<-c(-0.8,-0.1,0.1,0.8)
+cinicial=0
+for (i in 1:4){
+  if((sum((1+c0[i]*(xnorm-a0)/b0)<=0)==0)){
+    cinicial=c0[i]
+  }
+}
+if(cinicial==0){
+  print("No hay valor inicial disponible")
+  return()
+}
+
+emv<-optim(c(a0,b0,cinicial),logverxnorm)$par
+print(emv)
+Rpnina <- function(c){
+  return(exp(logverperfilnina(c)-logverperfilnina(emv[3])))
+}
+h<-Vectorize(Rpnina)
+cmin<-emv[2]/(emv[1]-max(xnorm)) 
+cmax<-emv[2]/(emv[1]-min(xnorm))
+plot.function(h,
+              from = cmin+0.1,
+              to = cmax-0.1, lwd = 2.5,xlim=c(-1, 2),ylim=c(0, 1),
+              col = "springgreen3",
+              main = "Verosimilitud relativa perfil de c",
+              ylab = "perfil",
+              xlab = "Valores")
+niv=0.1465
+cmin<-emv[3]
+lfemv=logverperfilnina(emv[3])
+tol=0.01
+lfmin=logverperfilnina(cmin)
+lv<-function(x){
+  return(-sum(log(fdensidad(xnorm,x[1],x[2],cmin))))
+}
+print("Aqui")
+while(exp(lfmin-lfemv)>tol){
+  #print(c(cmin,exp(lfmin-lfemv)))
+  if(abs(exp(lfmin-lfemv)-niv)<0.01){
+    c1<-cmin
+  }
+  points(cmin,exp(lfmin-lfemv),col="springgreen3",lwd=0.5)
+  cmin=cmin-0.001
+  lv<-function(x){
+    return(-sum(log(fdensidad(xnorm,x[1],x[2],cmin))))
+  } 
+  if(sum((1+cmin*(xnorm-emv[1])/emv[2])<=0)>=1){
+    break
+  }
+  emv<-optim(c(emv[1],emv[2]),lv)$par
+  lfmin<-logverxnorm2(emv[1],emv[2],cmin)
+}
+print("Aqui")
+emv<-optim(c(a0,b0,cinicial),logverxnorm)$par
+#cmax<-emv[2]/(emv[1]-min(xnorm))
+cmax=emv[3]
+lfmax=logverperfilnina(cmax)
+
+lv<-function(x){
+  return(-sum(log(fdensidad(xnorm,x[1],x[2],cmax))))
+}
+while(exp(lfmax-lfemv)>tol){
+  points(cmax,exp(lfmax-lfemv),col="springgreen3",lwd=0.5)
+  cmax=cmax+0.001
+  #print(cmax)
+  if(abs(exp(lfmax-lfemv)-niv)<0.01){
+    c2<-cmax
+  }
+  lv<-function(x){
+    return(-sum(log(fdensidad(xnorm,x[1],x[2],cmax))))
+  } 
+  if(sum((1+cmax*(xnorm-emv[1])/emv[2])<=0)>=1){
+    break
+  }
+  emv<-optim(c(emv[1],emv[2]),lv)$par
+  lfmax<-logverxnorm2(emv[1],emv[2],cmax)
+}
+#uno = uniroot(ints, c(cmin+0.1,0.5))$root
+#dos = uniroot(ints, c(1,2))$root
+segments(x0 = c1, y0 = niv, x1 = c2, y1 = niv, col = "blue",
+         lwd = 2.5)
+emv<-optim(c(a0,b0,cinicial),logverxnorm)$par
+abline(v=emv[3],lty=2,col="red")
+pp_plot(xnorm,emv[1],emv[2],emv[3],0.95)
