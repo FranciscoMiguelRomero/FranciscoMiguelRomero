@@ -26,9 +26,9 @@ pp_plot = function(X, ag, bg,cg, confidence){
   print(sum(abs(X-Y)))
   # puntos de la muestra
   plot(X, Y,xlim=c(0, 1),ylim=c(0, 1),
-       main = "Gráfica PP para DGVE",
-       xlab = "Probabilidades teóricas",
-       ylab = "Probabilidades empíricas",
+       main = "GrÃ¡fica PP para DGVE",
+       xlab = "Probabilidades teÃ³ricas",
+       ylab = "Probabilidades empÃ­ricas",
        pch = 19,
        cex = 0.5)
   # identidad
@@ -42,17 +42,17 @@ pp_plot = function(X, ag, bg,cg, confidence){
          lty = 2)
 }
 ##########################################################
-##############Ajuste DGVE es la función que ajusta un modelo DGVE al parámetro 
-#############datos, grafíca la verosimilitud perfil. No recominedo usarla para
+##############Ajuste DGVE es la funciÃ³n que ajusta un modelo DGVE al parÃ¡metro 
+#############datos, grafÃ­ca la verosimilitud perfil. No recominedo usarla para
 #############datos generales  pues en cuanto falla algo la funcion se detiene
 AjusteDGVE<-function(datosnina){
-  #####Negativo de Logverosimilitud evaluada en el vector x, usada para la función
-  ######optim. Se considera toda la información de la funcion de densidad
+  #####Negativo de Logverosimilitud evaluada en el vector x, usada para la funciÃ³n
+  ######optim. Se considera toda la informaciÃ³n de la funcion de densidad
   logverdatosnina<-function(x){
     return(-sum(log(fdensidad(datosnina,x[1],x[2],x[3]))))
   }
   #####Logverosimilitud evaluada en a,b,c
-  #####Se considera toda la información de la funcion de densidad
+  #####Se considera toda la informaciÃ³n de la funcion de densidad
   logverdatosnina2<-function(a,b,c){
     return(sum(log(fdensidad(datosnina,a,b,c))))
   }
@@ -99,18 +99,18 @@ AjusteDGVE<-function(datosnina){
   Rpnina <- function(c){
     return(exp(logverperfilnina(c)-logverperfilnina(emv[3])))
   }
-  ####vectorize porque aveces plot.function da problemas cuando la función tiene 
+  ####vectorize porque aveces plot.function da problemas cuando la funciÃ³n tiene 
   ####un vector como exponente.
   h<-Vectorize(Rpnina)
   #####Teoricamente son los valores de c que satisfacen x_(n)=a-b/c
   #####y x_(1)=a-b/c para a y b los EMV, pero no sirven de mucho pues al cambiar c
-  #### se deben cambiar los valores de a y b, solo nos interesa el cuadro para gráficar
+  #### se deben cambiar los valores de a y b, solo nos interesa el cuadro para grÃ¡ficar
   #### h de forma correcta mas adelante
   cmin<-emv[2]/(emv[1]-max(datosnina)) 
   cmax<-emv[2]/(emv[1]-min(datosnina))
   plot.function(h,
-                from = cmin+0.01,
-                to = cmax-0.01, lwd = 2.5,xlim=c(-1, 2),ylim=c(0, 1),
+                from = emv[3],
+                to = emv[3], lwd = 2.5,xlim=c(-1, 2),ylim=c(0, 1),
                 col = "springgreen3",
                 main = "Verosimilitud relativa perfil de c",
                 ylab = "perfil",
@@ -119,7 +119,7 @@ AjusteDGVE<-function(datosnina){
   niv=0.1465
   #######se toma un cmin inicila (EMV de c), lfemv es la logverosimilitud perfil de c
   #evaluada en el EMV, se toma una tolerancia de 0.01. El siguiente codigo lo que hace
-  #es grafícar la verosimilitud perfil de c de forma puntual, empieza en cmin, grafíca
+  #es grafÃ­car la verosimilitud perfil de c de forma puntual, empieza en cmin, grafÃ­ca
   ###(cmin,exp(lfmin-lfemv)), actualiza cmin=cmin-0.001 (Puede ser mas fina si quieren)
   ####, si (1+c0[i]*(y-ev[1])/emv[2])>0 se deja de cumplir entonces sale del while
   ####si no optimiza lv y guarda los EMV de a y b que serviran como valores iniciales
@@ -157,9 +157,9 @@ AjusteDGVE<-function(datosnina){
   cmax=emv[3]
   lfmax=logverperfilnina(cmax)
   
-  #lv<-function(x){
-  #  return(-sum(log(fdensidad(datosnina,x[1],x[2],cmax))))
- # }
+  lv<-function(x){
+  return(-sum(log(fdensidad(datosnina,x[1],x[2],cmax))))
+  }
   while(exp(lfmax-lfemv)>tol){
     points(cmax,exp(lfmax-lfemv),col="springgreen3",lwd=0.5)
     cmax=cmax+0.001
@@ -176,13 +176,14 @@ AjusteDGVE<-function(datosnina){
     emv<-optim(c(emv[1],emv[2]),lv)$par
     lfmax<-logverdatosnina2(emv[1],emv[2],cmax)
   }
-  #####Finalmente Gráfica el intervalo de verosimilitud sobre la gráfica
+  #####Finalmente GrÃ¡fica el intervalo de verosimilitud sobre la grÃ¡fica
   #y la linea vertical del EMV de c
   segments(x0 = c1, y0 = niv, x1 = c2, y1 = niv, col = "blue",
            lwd = 2.5)
   emv<-optim(c(a0,b0,cinicial),logverdatosnina)$par
   abline(v=emv[3],lty=2,col="red")
-  ####Gráfica PP
+  ####GrÃ¡fica PP
   pp_plot(datosnina,emv[1],emv[2],emv[3],0.95)}
 ####Ajuste DGVE aplicada a datos
 AjusteDGVE(datos)
+
