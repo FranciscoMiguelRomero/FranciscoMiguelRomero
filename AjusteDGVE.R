@@ -3,6 +3,8 @@ datosnino<-c(98,47.5,77,37.83,74,55,75.5,165,64)
 datosnorm<-c(41,110.5,130.4,50,60,188.5,57,73,114,199,89.22)
 datos<-c(66,88,41,98,47.5,58.5,110.5,130.4,77,50,60,37.83,170.5,188.5,74,
          112,65,34,57,55,73,75.5,27.5,165,169,148,64,35.78,74.33,114,199,89.22)
+log_1 <- function(x){ return( ifelse(x < exp(300), log(x), 300) ) }
+log_ <- function(x){ return( ifelse( (x<exp(-50)), -50, log_1(x) ) ) }
 #####funcion que aparece en el exponente de la distribucion
 fexp<-function(x,a,b,c){
   if (c==0){
@@ -49,12 +51,12 @@ AjusteDGVE<-function(datosnina){
   #####Negativo de Logverosimilitud evaluada en el vector x, usada para la función
   ######optim. Se considera toda la información de la funcion de densidad
   logverdatosnina<-function(x){
-    return(-sum(log(fdensidad(datosnina,x[1],x[2],x[3]))))
+    return(-sum(log_(fdensidad(datosnina,x[1],x[2],x[3]))))
   }
   #####Logverosimilitud evaluada en a,b,c
   #####Se considera toda la información de la funcion de densidad
   logverdatosnina2<-function(a,b,c){
-    return(sum(log(fdensidad(datosnina,a,b,c))))
+    return(sum(log_(fdensidad(datosnina,a,b,c))))
   }
   ######a0 y b0 son parametros iniciales para optim
   a0<-median(datosnina)
@@ -66,7 +68,7 @@ AjusteDGVE<-function(datosnina){
   #####parametros iniciales a0 y b0.
   logverperfilnina<-function(c){
     lv<-function(x){
-      return(-sum(log(fdensidad(datosnina,x[1],x[2],c))))
+      return(-sum(log_(fdensidad(datosnina,x[1],x[2],c))))
     } ###lv es la funcion de logverosimilitud evaluada en x=(a,b) y c,
     ####queremos maximizar para a,b
     a0<-median(datosnina) ##estimador inicial de a
@@ -140,7 +142,7 @@ AjusteDGVE<-function(datosnina){
     points(cmin,exp(lfmin-lfemv),col="springgreen3",lwd=0.5)
     cmin=cmin-0.001
     lv<-function(x){
-      return(-sum(log(fdensidad(datosnina,x[1],x[2],cmin))))
+      return(-sum(log_(fdensidad(datosnina,x[1],x[2],cmin))))
     } 
     if(sum((1+cmin*(datosnina-emv[1])/emv[2])<=0)>=1){
       break
@@ -158,7 +160,7 @@ AjusteDGVE<-function(datosnina){
   lfmax=logverperfilnina(cmax)
   
   lv<-function(x){
-  return(-sum(log(fdensidad(datosnina,x[1],x[2],cmax))))
+  return(-sum(log_(fdensidad(datosnina,x[1],x[2],cmax))))
   }
   while(exp(lfmax-lfemv)>tol){
     points(cmax,exp(lfmax-lfemv),col="springgreen3",lwd=0.5)
@@ -168,7 +170,7 @@ AjusteDGVE<-function(datosnina){
       c2<-cmax
     }
     lv<-function(x){
-      return(-sum(log(fdensidad(datosnina,x[1],x[2],cmax))))
+      return(-sum(log_(fdensidad(datosnina,x[1],x[2],cmax))))
     } 
     if(sum((1+cmax*(datosnina-emv[1])/emv[2])<=0)>=1){
       break
