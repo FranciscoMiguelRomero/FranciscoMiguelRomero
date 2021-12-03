@@ -6,17 +6,17 @@ for (i in 1:M){
 }
 xgamma
 logverxgamma<-function(x){
-  return(-sum(log(fdensidad(xgamma,x[1],x[2],x[3]))))
+  return(-sum(log_(fdensidad(xgamma,x[1],x[2],x[3]))))
 }
 logverxgamma2<-function(a,b,c){
-  return(sum(log(fdensidad(xgamma,a,b,c))))
+  return(sum(log_(fdensidad(xgamma,a,b,c))))
 }
 a0<-median(xgamma)
 b0<-sd(xgamma)
 
 logverperfilnina<-function(c){
   lv<-function(x){
-    return(-sum(log(fdensidad(xgamma,x[1],x[2],c))))
+    return(-sum(log_(fdensidad(xgamma,x[1],x[2],c))))
   } ###lv es la funcion de logverosimilitud evaluada en x=(a,b) y c,
   ####queremos maximizar para a,b
   a0<-median(xgamma) ##estimador inicial de a
@@ -57,7 +57,7 @@ lfemv=logverperfilnina(emv[3])
 tol=0.01
 lfmin=logverperfilnina(cmin)
 lv<-function(x){
-  return(-sum(log(fdensidad(xgamma,x[1],x[2],cmin))))
+  return(-sum(log_(fdensidad(xgamma,x[1],x[2],cmin))))
 }
 print("Aqui")
 while(exp(lfmin-lfemv)>tol){
@@ -68,7 +68,7 @@ while(exp(lfmin-lfemv)>tol){
   points(cmin,exp(lfmin-lfemv),col="springgreen3",lwd=0.5)
   cmin=cmin-0.001
   lv<-function(x){
-    return(-sum(log(fdensidad(xgamma,x[1],x[2],cmin))))
+    return(-sum(log_(fdensidad(xgamma,x[1],x[2],cmin))))
   } 
   if(sum((1+cmin*(xgamma-emv[1])/emv[2])<=0)>=1){
     break
@@ -83,7 +83,7 @@ cmax=emv[3]
 lfmax=logverperfilnina(cmax)
 
 lv<-function(x){
-  return(-sum(log(fdensidad(xgamma,x[1],x[2],cmax))))
+  return(-sum(log_(fdensidad(xgamma,x[1],x[2],cmax))))
 }
 while(exp(lfmax-lfemv)>tol){
   points(cmax,exp(lfmax-lfemv),col="springgreen3",lwd=0.5)
@@ -93,7 +93,7 @@ while(exp(lfmax-lfemv)>tol){
     c2<-cmax
   }
   lv<-function(x){
-    return(-sum(log(fdensidad(xgamma,x[1],x[2],cmax))))
+    return(-sum(log_(fdensidad(xgamma,x[1],x[2],cmax))))
   } 
   if(sum((1+cmax*(xgamma-emv[1])/emv[2])<=0)>=1){
     break
