@@ -6,17 +6,17 @@ for (i in 1:M){
 }
 xnorm
 logverxnorm<-function(x){
-  return(-sum(log(fdensidad(xnorm,x[1],x[2],x[3]))))
+  return(-sum(log_(fdensidad(xnorm,x[1],x[2],x[3]))))
 }
 logverxnorm2<-function(a,b,c){
-  return(sum(log(fdensidad(xnorm,a,b,c))))
+  return(sum(log_(fdensidad(xnorm,a,b,c))))
 }
 a0<-median(xnorm)
 b0<-sd(xnorm)
 
 logverperfilnina<-function(c){
   lv<-function(x){
-    return(-sum(log(fdensidad(xnorm,x[1],x[2],c))))
+    return(-sum(log_(fdensidad(xnorm,x[1],x[2],c))))
   } ###lv es la funcion de logverosimilitud evaluada en x=(a,b) y c,
   ####queremos maximizar para a,b
   a0<-median(xnorm) ##estimador inicial de a
@@ -57,7 +57,7 @@ lfemv=logverperfilnina(emv[3])
 tol=0.01
 lfmin=logverperfilnina(cmin)
 lv<-function(x){
-  return(-sum(log(fdensidad(xnorm,x[1],x[2],cmin))))
+  return(-sum(log_(fdensidad(xnorm,x[1],x[2],cmin))))
 }
 print("Aqui")
 while(exp(lfmin-lfemv)>tol){
@@ -68,7 +68,7 @@ while(exp(lfmin-lfemv)>tol){
   points(cmin,exp(lfmin-lfemv),col="springgreen3",lwd=0.5)
   cmin=cmin-0.001
   lv<-function(x){
-    return(-sum(log(fdensidad(xnorm,x[1],x[2],cmin))))
+    return(-sum(log_(fdensidad(xnorm,x[1],x[2],cmin))))
   } 
   if(sum((1+cmin*(xnorm-emv[1])/emv[2])<=0)>=1){
     break
@@ -83,7 +83,7 @@ cmax=emv[3]
 lfmax=logverperfilnina(cmax)
 
 lv<-function(x){
-  return(-sum(log(fdensidad(xnorm,x[1],x[2],cmax))))
+  return(-sum(log_(fdensidad(xnorm,x[1],x[2],cmax))))
 }
 while(exp(lfmax-lfemv)>tol){
   points(cmax,exp(lfmax-lfemv),col="springgreen3",lwd=0.5)
@@ -93,7 +93,7 @@ while(exp(lfmax-lfemv)>tol){
     c2<-cmax
   }
   lv<-function(x){
-    return(-sum(log(fdensidad(xnorm,x[1],x[2],cmax))))
+    return(-sum(log_(fdensidad(xnorm,x[1],x[2],cmax))))
   } 
   if(sum((1+cmax*(xnorm-emv[1])/emv[2])<=0)>=1){
     break
@@ -108,3 +108,4 @@ segments(x0 = c1, y0 = niv, x1 = c2, y1 = niv, col = "blue",
 emv<-optim(c(a0,b0,cinicial),logverxnorm)$par
 abline(v=emv[3],lty=2,col="red")
 pp_plot(xnorm,emv[1],emv[2],emv[3],0.95)
+
